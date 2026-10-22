@@ -9,9 +9,9 @@ using Microsoft.EntityFrameworkCore;
 public class PeopleSearchEndpoint : PagedDbEndpoint<PeopleRequest, PersonDto, PeopleResponse> {
     public PeopleSearchEndpoint(ITestDataContextFactory dbContextFactory) : base(dbContextFactory) { }
 
-    protected override string DefaultSortColumn => nameof(Person.PersonId);
-    protected override string EntityKeyColumn => nameof(Person.PersonId);
-    protected override string DtoKeyColumn => nameof(PersonDto.Id);
+    protected override PagingMetadata PagingMetadata => new(nameof(Person.PersonId),
+                                                        nameof(Person.PersonId),
+                                                        nameof(PersonDto.Id));
 
     public override void Configure() => Post("people/search");
 

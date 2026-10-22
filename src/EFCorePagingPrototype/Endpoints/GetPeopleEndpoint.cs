@@ -11,9 +11,9 @@ namespace EFCorePagingPrototype.Endpoints;
 public class GetPeopleEndpoint : PagedDbEndpoint<PeopleRequest, PersonDto, PeopleResponse> {
     public GetPeopleEndpoint(ITestDataContextFactory dbContextFactory) : base(dbContextFactory) { }
 
-    protected override string DefaultSortColumn => nameof(Person.PersonId);
-    protected override string EntityKeyColumn => nameof(Person.PersonId);
-    protected override string DtoKeyColumn => nameof(PersonDto.Id);
+    protected override PagingMetadata PagingMetadata => new(nameof(Person.PersonId), 
+                                                            nameof(Person.PersonId), 
+                                                            nameof(PersonDto.Id));
 
     public override void Configure() => Get("people");
 

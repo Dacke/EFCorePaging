@@ -1,14 +1,17 @@
 ﻿using EFCorePagingPrototype.Dtos.Enums;
 using EFCorePagingPrototype.Dtos.Filtering;
+using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using System.Reflection;
 
 namespace EFCorePagingPrototype.Data.Extensions;
 
 public static class QueryableFilterExtensions {
-    private static readonly MethodInfo StartsWithMethod = typeof(string).GetMethod(nameof(string.StartsWith), new[] { typeof(string) })!;
-    private static readonly MethodInfo EndsWithMethod = typeof(string).GetMethod(nameof(string.EndsWith), new[] { typeof(string) })!;
-    private static readonly MethodInfo ContainsMethod = typeof(string).GetMethod(nameof(string.Contains), new[] { typeof(string) })!;
+    private static readonly ConcurrentDictionary<(Type Type, string PropertyName), PropertyInfo?> PropertyCache = new();
+
+    private static readonly MethodInfo StartsWithMethod = typeof(string).GetMethod(nameof(string.StartsWith), [typeof(string)])!;
+    private static readonly MethodInfo EndsWithMethod = typeof(string).GetMethod(nameof(string.EndsWith), [typeof(string)])!;
+    private static readonly MethodInfo ContainsMethod = typeof(string).GetMethod(nameof(string.Contains), [typeof(string)])!;
 
     public static IQueryable<T> ApplyPrimeFilters<T>(this IQueryable<T> query, List<PrimeTableFilterRequest>? filters, FilterOperator globalOperator = FilterOperator.All) {
         if (filters == null || filters.Count == 0)
@@ -24,7 +27,6 @@ public static class QueryableFilterExtensions {
             Expression? fieldPredicate = null;
             bool isFieldAnd = fieldFilter.Operator == FilterOperator.All;
 
-            // Build rules for a single column/field
             foreach (var rule in fieldFilter.Constraints) {
                 if (string.IsNullOrWhiteSpace(rule.PropertyName) || string.IsNullOrWhiteSpace(rule.Value))
                     continue;
@@ -33,29 +35,18 @@ public static class QueryableFilterExtensions {
                 if (ruleExpr == null)
                     continue;
 
-                if (fieldPredicate == null) {
-                    fieldPredicate = ruleExpr;
-                }
-                else {
-                    fieldPredicate = isFieldAnd
-                        ? Expression.AndAlso(fieldPredicate, ruleExpr)
-                        : Expression.OrElse(fieldPredicate, ruleExpr);
-                }
+                fieldPredicate = fieldPredicate == null
+                    ? ruleExpr
+                    : (isFieldAnd ? Expression.AndAlso(fieldPredicate, ruleExpr) : Expression.OrElse(fieldPredicate, ruleExpr));
             }
 
             if (fieldPredicate == null)
                 continue;
 
-            // Combine across different columns
             bool isGlobalAnd = globalOperator == FilterOperator.All;
-            if (rootPredicate == null) {
-                rootPredicate = fieldPredicate;
-            }
-            else {
-                rootPredicate = isGlobalAnd
-                    ? Expression.AndAlso(rootPredicate, fieldPredicate)
-                    : Expression.OrElse(rootPredicate, fieldPredicate);
-            }
+            rootPredicate = rootPredicate == null
+                ? fieldPredicate
+                : (isGlobalAnd ? Expression.AndAlso(rootPredicate, fieldPredicate) : Expression.OrElse(rootPredicate, fieldPredicate));
         }
 
         if (rootPredicate == null)
@@ -66,7 +57,7 @@ public static class QueryableFilterExtensions {
     }
 
     private static Expression? BuildRuleExpression<T>(ParameterExpression parameter, ColumnFilterMetaData rule) {
-        var propInfo = typeof(T).GetProperty(rule.PropertyName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+        var propInfo = GetCachedProperty(typeof(T), rule.PropertyName);
         if (propInfo == null)
             return null;
 
@@ -77,16 +68,17 @@ public static class QueryableFilterExtensions {
         try {
             if (targetType == typeof(Guid))
                 convertedVal = Guid.Parse(rule.Value);
+            else if (targetType.IsEnum)
+                convertedVal = Enum.Parse(targetType, rule.Value, ignoreCase: true);
             else
                 convertedVal = Convert.ChangeType(rule.Value, targetType);
         }
         catch {
-            return null; // Ignore invalid format conversions
+            return null;
         }
 
         var constant = Expression.Constant(convertedVal, propInfo.PropertyType);
 
-        // String specific operations
         if (targetType == typeof(string)) {
             return rule.MatchMode switch {
                 MatchMode.StartsWith => Expression.Call(propertyAccess, StartsWithMethod, constant),
@@ -99,7 +91,6 @@ public static class QueryableFilterExtensions {
             };
         }
 
-        // Numeric / Date / Boolean comparison operations
         return rule.MatchMode switch {
             MatchMode.Equals => Expression.Equal(propertyAccess, constant),
             MatchMode.NotEquals => Expression.NotEqual(propertyAccess, constant),
@@ -109,5 +100,10 @@ public static class QueryableFilterExtensions {
             MatchMode.LessThanOrEqualTo => Expression.LessThanOrEqual(propertyAccess, constant),
             _ => Expression.Equal(propertyAccess, constant)
         };
+    }
+
+    private static PropertyInfo? GetCachedProperty(Type type, string propertyName) {
+        return PropertyCache.GetOrAdd((type, propertyName), key =>
+            key.Type.GetProperty(key.PropertyName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance));
     }
 }

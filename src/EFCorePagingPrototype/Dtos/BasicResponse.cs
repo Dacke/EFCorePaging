@@ -5,7 +5,5 @@ public abstract class BasicResponse<T> {
 
     public T[] Values { get; set; }
 
-    protected BasicResponse(IEnumerable<T> values) {
-        Values = values.ToArray();
-    }
+    protected BasicResponse(IEnumerable<T> values) => Values = values.ToArray();
 }

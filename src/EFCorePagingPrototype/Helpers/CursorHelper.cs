@@ -4,9 +4,7 @@ using System.Text.Json;
 namespace EFCorePagingPrototype.Helpers;
 
 public static class CursorHelper {
-    private static readonly JsonSerializerOptions JsonOptions = new() {
-        PropertyNameCaseInsensitive = true
-    };
+    private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };
 
     /// <summary>
     /// Serializes and Base64 encodes an object into an opaque cursor string.

@@ -1,11 +1,17 @@
 ﻿using EFCorePagingPrototype.Dtos.Enums;
 using EFCorePagingPrototype.Helpers;
+using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using System.Reflection;
 
 namespace EFCorePagingPrototype.Data.Extensions;
 
 public static class QueryableKeysetExtensions {
+    private static readonly ConcurrentDictionary<(Type Type, string PropertyName), PropertyInfo?> PropertyCache = new();
+
+    private static readonly MethodInfo StringCompareToMethod = typeof(string).GetMethod(nameof(string.CompareTo), [typeof(string)])!;
+    private static readonly MethodInfo GuidCompareToMethod = typeof(Guid).GetMethod(nameof(Guid.CompareTo), [typeof(Guid)])!;
+
     public static IQueryable<T> ApplyKeysetPaging<T>(this IQueryable<T> query, KeysetCursor? cursor, List<(string PropertyName, SortDirection Direction)> sortColumns, string primaryKeyName, NavigationDirection navDirection = NavigationDirection.Forward) {
         bool isBackward = navDirection == NavigationDirection.Backward;
 
@@ -27,16 +33,13 @@ public static class QueryableKeysetExtensions {
         return query;
     }
 
-    private static SortDirection InvertDirection(SortDirection dir) => dir == SortDirection.Ascending ? SortDirection.Descending : SortDirection.Ascending;
+    private static SortDirection InvertDirection(SortDirection dir) =>
+        dir == SortDirection.Ascending ? SortDirection.Descending : SortDirection.Ascending;
 
-    private static IQueryable<T> ApplyOrdering<T>(
-        IQueryable<T> query,
-        List<(string PropertyName, SortDirection Direction)> sortColumns,
-        string primaryKeyName) {
+    private static IQueryable<T> ApplyOrdering<T>(IQueryable<T> query, List<(string PropertyName, SortDirection Direction)> sortColumns, string primaryKeyName) {
         var parameter = Expression.Parameter(typeof(T), "x");
         var isFirst = true;
 
-        // Ensure tie-breaker PK is included if not specified
         var allSorts = sortColumns.ToList();
         if (allSorts.Any(s => s.PropertyName.Equals(primaryKeyName, StringComparison.OrdinalIgnoreCase)) == false) {
             var lastDirection = allSorts.LastOrDefault().Direction;
@@ -44,7 +47,7 @@ public static class QueryableKeysetExtensions {
         }
 
         foreach (var (propName, direction) in allSorts) {
-            var propInfo = typeof(T).GetProperty(propName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance)
+            var propInfo = GetCachedProperty(typeof(T), propName)
                 ?? throw new ArgumentException($"Property '{propName}' not found on type {typeof(T).Name}");
 
             var propertyAccess = Expression.Property(parameter, propInfo);
@@ -68,10 +71,7 @@ public static class QueryableKeysetExtensions {
         return query;
     }
 
-    private static Expression<Func<T, bool>>? BuildKeysetPredicate<T>(
-        KeysetCursor cursor,
-        List<(string PropertyName, SortDirection Direction)> sortColumns,
-        string primaryKeyName) {
+    private static Expression<Func<T, bool>>? BuildKeysetPredicate<T>(KeysetCursor cursor, List<(string PropertyName, SortDirection Direction)> sortColumns, string primaryKeyName) {
         var parameter = Expression.Parameter(typeof(T), "x");
         Expression? totalPredicate = null;
 
@@ -81,7 +81,6 @@ public static class QueryableKeysetExtensions {
             allSorts.Add((primaryKeyName, lastDir));
         }
 
-        // Build OR branches for keyset evaluation
         for (int i = 0; i < allSorts.Count; i++) {
             Expression? branch = null;
 
@@ -92,7 +91,7 @@ public static class QueryableKeysetExtensions {
                 branch = branch == null ? eqExpr : Expression.AndAlso(branch, eqExpr);
             }
 
-            // 2. Inequality for the target column
+            // 2. Inequality for target column (direction already inverted for backward traversal)
             var (targetProp, direction) = allSorts[i];
             var compType = direction == SortDirection.Ascending
                 ? ExpressionType.GreaterThan
@@ -101,7 +100,6 @@ public static class QueryableKeysetExtensions {
             var compExpr = BuildComparison<T>(parameter, cursor, targetProp, compType);
             branch = branch == null ? compExpr : Expression.AndAlso(branch, compExpr);
 
-            // Combine branches with OR
             totalPredicate = totalPredicate == null ? branch : Expression.OrElse(totalPredicate, branch);
         }
 
@@ -111,12 +109,8 @@ public static class QueryableKeysetExtensions {
         return Expression.Lambda<Func<T, bool>>(totalPredicate, parameter);
     }
 
-    private static Expression BuildComparison<T>(
-        ParameterExpression parameter,
-        KeysetCursor cursor,
-        string propertyName,
-        ExpressionType comparisonType) {
-        var propInfo = typeof(T).GetProperty(propertyName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance)
+    private static Expression BuildComparison<T>(ParameterExpression parameter, KeysetCursor cursor, string propertyName, ExpressionType comparisonType) {
+        var propInfo = GetCachedProperty(typeof(T), propertyName)
             ?? throw new ArgumentException($"Property '{propertyName}' on {typeof(T).Name} not found.");
 
         var left = Expression.Property(parameter, propInfo);
@@ -130,14 +124,11 @@ public static class QueryableKeysetExtensions {
 
         var targetType = Nullable.GetUnderlyingType(propInfo.PropertyType) ?? propInfo.PropertyType;
 
-        // 1. Equalities (works natively for all types)
         if (comparisonType == ExpressionType.Equal)
             return Expression.Equal(left, right);
 
-        // 2. String handling: Use CompareTo so Expression Tree translates directly to SQL (LastName > @val)
         if (targetType == typeof(string)) {
-            var compareToMethod = typeof(string).GetMethod(nameof(string.CompareTo), [typeof(string)])!;
-            var compareCall = Expression.Call(left, compareToMethod, right);
+            var compareCall = Expression.Call(left, StringCompareToMethod, right);
             var zero = Expression.Constant(0);
 
             return comparisonType switch {
@@ -149,10 +140,8 @@ public static class QueryableKeysetExtensions {
             };
         }
 
-        // 3. Guid handling
         if (targetType == typeof(Guid)) {
-            var compareToMethod = typeof(Guid).GetMethod(nameof(Guid.CompareTo), [typeof(Guid)])!;
-            var compareCall = Expression.Call(left, compareToMethod, right);
+            var compareCall = Expression.Call(left, GuidCompareToMethod, right);
             var zero = Expression.Constant(0);
 
             return comparisonType switch {
@@ -164,7 +153,6 @@ public static class QueryableKeysetExtensions {
             };
         }
 
-        // 4. Primitive types (int, long, DateTime, double, etc.)
         return Expression.MakeBinary(comparisonType, left, right);
     }
 
@@ -173,13 +161,17 @@ public static class QueryableKeysetExtensions {
             return null;
 
         var underlyingType = Nullable.GetUnderlyingType(targetType) ?? targetType;
-
         if (underlyingType == typeof(Guid))
             return Guid.Parse(value);
 
         if (underlyingType.IsEnum)
-            return Enum.Parse(underlyingType, value);
+            return Enum.Parse(underlyingType, value, ignoreCase: true);
 
         return Convert.ChangeType(value, underlyingType);
+    }
+
+    private static PropertyInfo? GetCachedProperty(Type type, string propertyName) {
+        return PropertyCache.GetOrAdd((type, propertyName), key =>
+            key.Type.GetProperty(key.PropertyName, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance));
     }
 }
