@@ -15,7 +15,8 @@ public class PeopleSearchEndpoint : PagedDbEndpoint<PeopleRequest, PersonDto, Pe
 
     public override void Configure() => Post("people/search");
 
-    protected override async Task<IList<PersonDto>> HandlePagedWithDbAsync(ITestDataContext db, PeopleRequest req, PagingContext pagingContext, CancellationToken ct) {        
+    protected override async Task<IList<PersonDto>> HandlePagedWithDbAsync(ITestDataContext db, PeopleRequest req, PagingContext pagingContext, CancellationToken ct) {
+        //  TODO: Figure out a way to determine if there is a DTO to Entity name map.
         var personDtos = await db.People
                                  .AsNoTracking()
                                  .ApplyPrimeFilters(req.Filters, req.GlobalFilterOperator)

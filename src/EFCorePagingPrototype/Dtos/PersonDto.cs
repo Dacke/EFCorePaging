@@ -1,6 +1,7 @@
 ﻿namespace EFCorePagingPrototype.Data.Models;
 
 public class PersonDto {
+    //[EntityMap("PersonId")]
     public Guid Id { get; set; }
 
     public required string FirstName { get; set; }

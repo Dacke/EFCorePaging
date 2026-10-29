@@ -1,7 +1,10 @@
 ﻿namespace EFCorePagingPrototype.Dtos.Paging;
 
 public class PagedResponse<T> {
+    //  TODO: Get a total count of the values that match the filter.
     public T[] Values { get; set; } = Array.Empty<T>();
+
+    //  TODO: Possibly going away
     public string? NextCursor { get; set; }
     public string? PreviousCursor { get; set; }
     public bool HasMore { get; set; }

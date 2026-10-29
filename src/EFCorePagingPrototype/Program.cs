@@ -30,7 +30,12 @@ app
     .UseDefaultExceptionHandler()
     .UseFastEndpoints(config => {
         config.Endpoints.RoutePrefix = "api";
-        config.Errors.UseProblemDetails();
+        //config.Errors.UseProblemDetails() //  Site Config
+        config.Errors.UseProblemDetails(cfg => {
+            cfg.AllowDuplicateErrors = true;
+            cfg.IndicateErrorCode = true;
+            cfg.IndicateErrorSeverity = true;
+        });
         config.Endpoints.Configurator = ep => ep.AllowAnonymous();
     });
 
