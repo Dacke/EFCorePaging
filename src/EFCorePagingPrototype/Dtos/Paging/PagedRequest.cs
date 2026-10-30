@@ -34,3 +34,40 @@ public class PagedRequest {
     public FilterOperator GlobalFilterOperator { get; set; } = FilterOperator.All;
     public List<PrimeTableFilterRequest> Filters { get; set; } = new();
 }
+
+public class PagedRequest2 {
+    /// <summary>
+    /// Number of records to skip (maps to PrimeNG lazy load 'first').
+    /// </summary>
+    public int Skip { get; set; } = 0;
+
+    /// <summary>
+    /// Requested record count per page (maps to PrimeNG lazy load 'rows').
+    /// </summary>
+    public virtual int PageSize { get; set; } = 20;
+
+    /// <summary>
+    /// Comma-separated string of properties to sort by.
+    /// </summary>
+    public virtual string SortBy { get; set; } = string.Empty;
+
+    /// <summary>
+    /// Sets the default sort direction.
+    /// </summary>
+    /// <remarks>Ascending or Descending</remarks>
+    public virtual SortDirection SortDirection { get; set; } = SortDirection.Ascending;
+
+    #region PrimeNG Global Filter Configuration
+
+    /// <summary>
+    /// Specifies how multiple global filters are combined.
+    /// </summary>
+    public FilterOperator GlobalFilterOperator { get; set; } = FilterOperator.All;
+
+    /// <summary>
+    /// Collection of filters to apply to the requested data.
+    /// </summary>
+    public List<PrimeTableFilterRequest> Filters { get; set; } = new();
+
+    #endregion
+}

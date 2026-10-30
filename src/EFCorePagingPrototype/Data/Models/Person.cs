@@ -20,7 +20,9 @@ public class Person {
     public string? PostalCode { get; set; }
 
     public int Age { get; set; }
-    
+
+    public DateTime BirthDay { get; set; }
+
 
     public Person() => PersonId = Guid.CreateVersion7();
 }
