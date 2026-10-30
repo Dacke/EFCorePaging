@@ -18,4 +18,5 @@ public class PersonDto {
     public string? PostalCode { get; set; }
 
     public int Age { get; set; }
+    public DateTime BirthDay { get; set; }
 }
