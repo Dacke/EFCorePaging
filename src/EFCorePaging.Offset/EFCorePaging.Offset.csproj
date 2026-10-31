@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <Title>EntityFramework Core Offset Paging</Title>
+    <GeneratePackageOnBuild>True</GeneratePackageOnBuild>
+    <Description>Offset pagination relies on numerical page offsets. The client requests a specific window of data by sending the number of records to skip (`Skip` / `First`) and the number of records to fetch (`Take` / `PageSize`).</Description>
+    <Version>1.0.0</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\EFCorePaging.Common\EFCorePaging.Common.csproj" />
+  </ItemGroup>
+
+</Project>
