@@ -1,4 +1,6 @@
-﻿using EFCorePagingPrototype.Data;
+﻿using EFCorePaging.Offset.Enums;
+using EFCorePaging.Offset.Sorting;
+using EFCorePagingPrototype.Data;
 using EFCorePagingPrototype.Dtos.Enums;
 using EFCorePagingPrototype.Dtos.Paging;
 using EFCorePagingPrototype.Helpers;

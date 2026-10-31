@@ -1,8 +1,8 @@
-﻿using EFCorePagingPrototype.Dtos.Enums;
+﻿using EFCorePaging.Offset.Enums;
 
-namespace EFCorePagingPrototype.Dtos.Filtering;
+namespace EFCorePaging.Offset.Filtering;
 
-public class ColumnFilterMetaData {
+public class ColumnFilter {
     public string PropertyName { get; set; } = string.Empty;
     public string Value { get; set; } = string.Empty;
 

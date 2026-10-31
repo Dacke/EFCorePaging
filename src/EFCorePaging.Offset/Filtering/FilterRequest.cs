@@ -1,8 +1,8 @@
-﻿using EFCorePagingPrototype.Dtos.Enums;
+﻿using EFCorePaging.Offset.Enums;
 
-namespace EFCorePagingPrototype.Dtos.Filtering;
+namespace EFCorePaging.Offset.Filtering;
 
-public class PrimeTableFilterRequest {
+public class FilterRequest {
     /// <summary>
     /// Global or Column-level match operator ("all" = AND, "any" = OR).
     /// </summary>
@@ -11,5 +11,5 @@ public class PrimeTableFilterRequest {
     /// <summary>
     /// Rules per field name (e.g., "country", "name", "age").
     /// </summary>
-    public List<ColumnFilterMetaData> Constraints { get; set; } = new();
+    public List<ColumnFilter> Constraints { get; set; } = [];
 }

@@ -27,4 +27,8 @@
     <Folder Include="Data\Migrations\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\EFCorePaging.Offset\EFCorePaging.Offset.csproj" />
+  </ItemGroup>
+
 </Project>

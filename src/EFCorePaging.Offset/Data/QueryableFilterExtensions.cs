@@ -1,10 +1,10 @@
-﻿using EFCorePagingPrototype.Dtos.Enums;
-using EFCorePagingPrototype.Dtos.Filtering;
+﻿using EFCorePaging.Offset.Enums;
+using EFCorePaging.Offset.Filtering;
 using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace EFCorePagingPrototype.Data.Extensions;
+namespace EFCorePaging.Offset.Data;
 
 public static class QueryableFilterExtensions {
     private static readonly ConcurrentDictionary<(Type Type, string PropertyName), PropertyInfo?> PropertyCache = new();
@@ -13,7 +13,7 @@ public static class QueryableFilterExtensions {
     private static readonly MethodInfo EndsWithMethod = typeof(string).GetMethod(nameof(string.EndsWith), [typeof(string)])!;
     private static readonly MethodInfo ContainsMethod = typeof(string).GetMethod(nameof(string.Contains), [typeof(string)])!;
 
-    public static IQueryable<T> ApplyPrimeFilters<T>(this IQueryable<T> query, List<PrimeTableFilterRequest>? filters, FilterOperator globalOperator = FilterOperator.All) {
+    public static IQueryable<T> ApplyFilters<T>(this IQueryable<T> query, List<FilterRequest>? filters, FilterOperator globalOperator = FilterOperator.All) {
         if (filters == null || filters.Count == 0)
             return query;
 
@@ -56,7 +56,7 @@ public static class QueryableFilterExtensions {
         return query.Where(lambda);
     }
 
-    private static Expression? BuildRuleExpression<T>(ParameterExpression parameter, ColumnFilterMetaData rule) {
+    private static Expression? BuildRuleExpression<T>(ParameterExpression parameter, ColumnFilter rule) {
         var propInfo = GetCachedProperty(typeof(T), rule.PropertyName);
         if (propInfo == null)
             return null;

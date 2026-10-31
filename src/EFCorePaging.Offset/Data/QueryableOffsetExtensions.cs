@@ -1,18 +1,14 @@
-﻿using EFCorePagingPrototype.Dtos.Enums;
+﻿using EFCorePaging.Offset.Enums;
 using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace EFCorePagingPrototype.Data.Extensions;
+namespace EFCorePaging.Offset.Data;
 
 public static class QueryableOffsetExtensions {
     private static readonly ConcurrentDictionary<(Type Type, string PropertyName), PropertyInfo?> PropertyCache = new();
 
-    public static IQueryable<T> ApplyOffsetSorting<T>(
-        this IQueryable<T> query,
-        string sortBy,
-        SortDirection defaultDirection = SortDirection.Ascending,
-        Dictionary<string, string>? propertyMap = null) {
+    public static IQueryable<T> ApplyOffsetSorting<T>(this IQueryable<T> query, string sortBy, SortDirection defaultDirection = SortDirection.Ascending, Dictionary<string, string>? propertyMap = null) {
         if (string.IsNullOrWhiteSpace(sortBy))
             return query;
 

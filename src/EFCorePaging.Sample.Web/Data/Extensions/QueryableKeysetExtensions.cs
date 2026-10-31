@@ -1,4 +1,5 @@
-﻿using EFCorePagingPrototype.Dtos.Enums;
+﻿using EFCorePaging.Offset.Enums;
+using EFCorePagingPrototype.Dtos.Enums;
 using EFCorePagingPrototype.Helpers;
 using System.Collections.Concurrent;
 using System.Linq.Expressions;
