@@ -28,6 +28,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\EFCorePaging.Cursor\EFCorePaging.Cursor.csproj" />
     <ProjectReference Include="..\EFCorePaging.Offset\EFCorePaging.Offset.csproj" />
   </ItemGroup>
 

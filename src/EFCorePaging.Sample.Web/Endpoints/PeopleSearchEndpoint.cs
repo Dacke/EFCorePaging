@@ -1,8 +1,10 @@
-﻿using EFCorePaging.Offset;
+﻿using EFCorePaging.Common.Data;
+using EFCorePaging.Offset;
 using EFCorePaging.Offset.Data;
-using EFCorePagingPrototype.Data;
-using EFCorePagingPrototype.Data.Models;
-using EFCorePagingPrototype.Endpoints;
+using EFCorePaging.Sample.Web.Data;
+using EFCorePaging.Sample.Web.Data.Models;
+using EFCorePaging.Sample.Web.Dtos;
+using EFCorePaging.Sample.Web.Endpoints;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 
@@ -25,7 +27,7 @@ public class PeopleSearchEndpoint : ExtendedDbEndpoint<PeopleSearchRequest, Page
 
         // Apply sorting and offset paging
         var personDtos = await baseQuery
-                         .ApplyOffsetSorting(req.SortBy, req.DefaultSortDirection, propertyMap)
+                         .ApplySorting(req.SortBy, req.DefaultSortDirection, propertyMap)
                          .Skip(req.Skip)
                          .Take(req.PageSize)
                          .ProjectToType<PersonDto>()

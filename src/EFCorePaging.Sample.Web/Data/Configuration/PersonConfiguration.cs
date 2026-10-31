@@ -1,8 +1,8 @@
-﻿using EFCorePagingPrototype.Data.Models;
+﻿using EFCorePaging.Sample.Web.Data.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
-namespace EFCorePagingPrototype.Data.Configuration;
+namespace EFCorePaging.Sample.Web.Data.Configuration;
 
 public class PersonConfiguration : IEntityTypeConfiguration<Person> {
     public void Configure(EntityTypeBuilder<Person> builder) {

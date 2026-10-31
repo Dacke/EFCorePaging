@@ -1,10 +1,10 @@
-﻿using EFCorePaging.Offset.Enums.Converters;
+﻿using EFCorePaging.Common.Enums.Converters;
 using System.Runtime.Serialization;
 using System.Text.Json.Serialization;
 
-namespace EFCorePaging.Offset.Enums;
+namespace EFCorePaging.Common.Enums;
 
-[JsonConverter(typeof(EnumMemberJsonConverter<SortDirection>))]
+[JsonConverter(typeof(EnumMemberJsonConverter<FilterOperator>))]
 public enum FilterOperator {
     [EnumMember(Value = "all, and")]
     All = 0,

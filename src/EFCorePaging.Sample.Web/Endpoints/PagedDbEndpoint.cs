@@ -1,14 +1,14 @@
-﻿using EFCorePaging.Offset.Enums;
-using EFCorePaging.Offset.Sorting;
-using EFCorePagingPrototype.Data;
-using EFCorePagingPrototype.Dtos.Enums;
-using EFCorePagingPrototype.Dtos.Paging;
-using EFCorePagingPrototype.Helpers;
+﻿using EFCorePaging.Common.Enums;
+using EFCorePaging.Common.Sorting;
+using EFCorePaging.Cursor;
+using EFCorePaging.Cursor.Enums;
+using EFCorePaging.Cursor.Helpers;
+using EFCorePaging.Sample.Web.Data;
 using System.Collections.Concurrent;
 using System.Net;
 using System.Reflection;
 
-namespace EFCorePagingPrototype.Endpoints;
+namespace EFCorePaging.Sample.Web.Endpoints;
 
 public abstract class PagedDbEndpoint<TRequest, TQueryResult, TResponse> : DbEndpoint<TRequest, TResponse>
     where TRequest : PagedRequest
@@ -30,7 +30,7 @@ public abstract class PagedDbEndpoint<TRequest, TQueryResult, TResponse> : DbEnd
 
             int pageSize = req.PageSize is < 1 or > 100 ? 20 : req.PageSize;
             var cursor = CursorHelper.DecodeCursor<KeysetCursor>(req.Cursor);
-            var sortColumns = SortParser.ParseSortColumns(req.SortBy, req.SortDirection, defaultColumn: PagingMetadata.DefaultSortColumn);
+            var sortColumns = SortParser.ParseSortColumns(req.SortBy, req.DefaultSortDirection, defaultColumn: PagingMetadata.DefaultSortColumn);
 
             var pagedContext = new PagingContext(pageSize, cursor, sortColumns, PagingMetadata.EntityKeyColumn, req.NavigationDirection);
             var results = await HandlePagedWithDbAsync(db, req, pagedContext, ct);

@@ -1,12 +1,13 @@
-﻿using EFCorePagingPrototype.Data;
-using EFCorePagingPrototype.Data.Extensions;
-using EFCorePagingPrototype.Data.Models;
-using EFCorePagingPrototype.Dtos.Paging;
+﻿using EFCorePaging.Cursor;
+using EFCorePaging.Cursor.Data;
+using EFCorePaging.Sample.Web.Data;
+using EFCorePaging.Sample.Web.Data.Models;
+using EFCorePaging.Sample.Web.Dtos;
 using FastEndpoints;
 using Mapster;
 using Microsoft.EntityFrameworkCore;
 
-namespace EFCorePagingPrototype.Endpoints;
+namespace EFCorePaging.Sample.Web.Endpoints;
 
 public class GetPeopleEndpoint : PagedDbEndpoint<PeopleRequest, PersonDto, PeopleResponse> {
     public GetPeopleEndpoint(ITestDataContextFactory dbContextFactory) : base(dbContextFactory) { }

@@ -3,7 +3,7 @@ using System.Runtime.Serialization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace EFCorePaging.Offset.Enums.Converters;
+namespace EFCorePaging.Common.Enums.Converters;
 
 /// <summary>
 /// Reusable JsonConverter that maps enum values using [EnumMember(Value = "...")] attributes 
@@ -32,7 +32,8 @@ public class EnumMemberJsonConverter<TEnum> : JsonConverter<TEnum> where TEnum :
 
                 var aliases = attr.Value.Split(',', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
                 foreach (var alias in aliases)
-                    ToEnum[alias] = value;            }
+                    ToEnum[alias] = value;
+            }
 
             // Register standard enum names and lower cased variants as fallbacks
             ToEnum[value.ToString()] = value;

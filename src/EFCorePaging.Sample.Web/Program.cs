@@ -1,5 +1,5 @@
-using EFCorePagingPrototype.Data;
-using EFCorePagingPrototype.Mappings;
+using EFCorePaging.Sample.Web.Data;
+using EFCorePaging.Sample.Web.Mappings;
 using FastEndpoints;
 using Mapster;
 using Microsoft.EntityFrameworkCore;

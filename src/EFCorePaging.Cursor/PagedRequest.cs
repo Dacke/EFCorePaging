@@ -1,8 +1,8 @@
-﻿using EFCorePaging.Offset.Enums;
-using EFCorePaging.Offset.Filtering;
-using EFCorePagingPrototype.Dtos.Enums;
+﻿using EFCorePaging.Common.Enums;
+using EFCorePaging.Common.Filtering;
+using EFCorePaging.Cursor.Enums;
 
-namespace EFCorePagingPrototype.Dtos.Paging;
+namespace EFCorePaging.Cursor;
 
 public class PagedRequest {
     /// <summary>
@@ -12,13 +12,11 @@ public class PagedRequest {
     public string? Cursor { get; set; }
 
     public NavigationDirection NavigationDirection { get; set; } = NavigationDirection.Forward;
-
-    //  TODO: Skip Property (gimmie)?
-
+    
     /// <summary>
     /// Requested record count per segment (defaults to 20).
     /// </summary>
-    public virtual int PageSize { get; set; } = 20;         //  RecordSize (this many)?
+    public virtual int PageSize { get; set; } = 20;
 
     /// <summary>
     /// Name of the main entity property to sort by (e.g., "LastName", "Age", "State").
@@ -28,10 +26,15 @@ public class PagedRequest {
     /// <summary>
     /// Ascending or Descending sort direction.
     /// </summary>
-    public virtual SortDirection SortDirection { get; set; } = SortDirection.Ascending; //  TODO: No longer needed
+    public virtual SortDirection DefaultSortDirection { get; set; } = SortDirection.Ascending;
 
-    // PrimeNG Global Filter Configuration
-    // "all"; // "all" (AND) | "any" (OR)    
+    /// <summary>
+    /// Specifies how multiple global filters are combined.
+    /// </summary>
     public FilterOperator GlobalFilterOperator { get; set; } = FilterOperator.All;
+
+    /// <summary>
+    /// Collection of filters to apply to the requested data.
+    /// </summary>
     public List<FilterRequest> Filters { get; set; } = new();
 }

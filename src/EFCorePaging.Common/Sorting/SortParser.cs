@@ -1,6 +1,6 @@
-﻿using EFCorePaging.Offset.Enums;
+﻿using EFCorePaging.Common.Enums;
 
-namespace EFCorePaging.Offset.Sorting;
+namespace EFCorePaging.Common.Sorting;
 
 public static class SortParser {
     public static List<(string PropertyName, SortDirection Direction)> ParseSortColumns(

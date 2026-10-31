@@ -1,11 +1,9 @@
-﻿using EFCorePagingPrototype.Data;
-using EFCorePagingPrototype.Dtos.Enums;
-using EFCorePagingPrototype.Helpers;
+﻿using EFCorePaging.Sample.Web.Data;
 using FastEndpoints;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 
-namespace EFCorePagingPrototype.Endpoints;
+namespace EFCorePaging.Sample.Web.Endpoints;
 
 public abstract class DbEndpointWithoutRequest<TResponse> : DbEndpoint<EmptyRequest, TResponse> {
     protected DbEndpointWithoutRequest(ITestDataContextFactory dbContextFactory) : base(dbContextFactory) { }

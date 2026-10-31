@@ -1,5 +1,5 @@
-﻿using EFCorePaging.Offset.Enums;
-using EFCorePaging.Offset.Filtering;
+﻿using EFCorePaging.Common.Enums;
+using EFCorePaging.Common.Filtering;
 
 namespace EFCorePaging.Offset;
 

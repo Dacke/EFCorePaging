@@ -1,4 +1,4 @@
-﻿namespace EFCorePagingPrototype.Data.Models;
+﻿namespace EFCorePaging.Sample.Web.Dtos;
 
 public class PersonDto {
     //[EntityMap("PersonId")]

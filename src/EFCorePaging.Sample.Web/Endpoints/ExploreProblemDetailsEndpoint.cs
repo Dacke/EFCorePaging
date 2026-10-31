@@ -1,8 +1,8 @@
-﻿using EFCorePagingPrototype.Data;
+﻿using EFCorePaging.Sample.Web.Data;
 using FastEndpoints;
 using FluentValidation.Results;
 
-namespace EFCorePagingPrototype.Endpoints;
+namespace EFCorePaging.Sample.Web.Endpoints;
 
 public class ExploreProblemDetailsEndpoint : ExtendedDbEndpoint<EmptyRequest> {
     public ExploreProblemDetailsEndpoint(ITestDataContextFactory dbContextFactory) : base(dbContextFactory) { }

@@ -1,10 +1,10 @@
-﻿using EFCorePaging.Offset.Enums;
-using EFCorePaging.Offset.Filtering;
+﻿using EFCorePaging.Common.Enums;
+using EFCorePaging.Common.Filtering;
 using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace EFCorePaging.Offset.Data;
+namespace EFCorePaging.Common.Data;
 
 public static class QueryableFilterExtensions {
     private static readonly ConcurrentDictionary<(Type Type, string PropertyName), PropertyInfo?> PropertyCache = new();

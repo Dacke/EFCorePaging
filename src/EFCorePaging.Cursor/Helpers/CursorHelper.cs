@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Text.Json;
 
-namespace EFCorePagingPrototype.Helpers;
+namespace EFCorePaging.Cursor.Helpers;
 
 public static class CursorHelper {
     private static readonly JsonSerializerOptions JsonOptions = new() { PropertyNameCaseInsensitive = true };

@@ -1,7 +1,8 @@
-﻿using EFCorePagingPrototype.Data.Models;
+﻿using EFCorePaging.Sample.Web.Data.Models;
+using EFCorePaging.Sample.Web.Dtos;
 using Mapster;
 
-namespace EFCorePagingPrototype.Mappings;
+namespace EFCorePaging.Sample.Web.Mappings;
 
 public class MappingConfig : IRegister {
     public void Register(TypeAdapterConfig config) {

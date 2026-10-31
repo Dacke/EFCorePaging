@@ -1,8 +1,8 @@
-﻿using EFCorePagingPrototype.Data.Configuration;
-using EFCorePagingPrototype.Data.Models;
+﻿using EFCorePaging.Sample.Web.Data.Configuration;
+using EFCorePaging.Sample.Web.Data.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace EFCorePagingPrototype.Data;
+namespace EFCorePaging.Sample.Web.Data;
 
 public interface ITestDataContext : IDisposable, IAsyncDisposable {
     DbSet<Person> People { get; set; }

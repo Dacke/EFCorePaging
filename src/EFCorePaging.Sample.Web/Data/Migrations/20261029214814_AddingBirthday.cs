@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace EFCorePagingPrototype.Data.Migrations
+namespace EFCorePaging.Sample.Web.Data.Migrations 
 {
     /// <inheritdoc />
     public partial class AddingBirthday : Migration

@@ -1,4 +1,4 @@
-﻿namespace EFCorePagingPrototype.Dtos;
+﻿namespace EFCorePaging.Sample.Web.Dtos;
 
 public abstract class BasicResponse<T> {
     public int Count => Values?.Length ?? 0;

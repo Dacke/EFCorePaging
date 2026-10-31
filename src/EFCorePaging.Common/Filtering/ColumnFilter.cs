@@ -1,6 +1,6 @@
-﻿using EFCorePaging.Offset.Enums;
+﻿using EFCorePaging.Common.Enums;
 
-namespace EFCorePaging.Offset.Filtering;
+namespace EFCorePaging.Common.Filtering;
 
 public class ColumnFilter {
     public string PropertyName { get; set; } = string.Empty;

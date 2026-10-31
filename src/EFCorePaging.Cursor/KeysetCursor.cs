@@ -1,4 +1,4 @@
-﻿namespace EFCorePagingPrototype.Helpers;
+﻿namespace EFCorePaging.Cursor;
 
 public class KeysetCursor {
     public Dictionary<string, string?> SortValues { get; set; } = new();

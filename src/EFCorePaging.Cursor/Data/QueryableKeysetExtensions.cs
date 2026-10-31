@@ -1,11 +1,10 @@
-﻿using EFCorePaging.Offset.Enums;
-using EFCorePagingPrototype.Dtos.Enums;
-using EFCorePagingPrototype.Helpers;
+﻿using EFCorePaging.Common.Enums;
+using EFCorePaging.Cursor.Enums;
 using System.Collections.Concurrent;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace EFCorePagingPrototype.Data.Extensions;
+namespace EFCorePaging.Cursor.Data;
 
 public static class QueryableKeysetExtensions {
     private static readonly ConcurrentDictionary<(Type Type, string PropertyName), PropertyInfo?> PropertyCache = new();

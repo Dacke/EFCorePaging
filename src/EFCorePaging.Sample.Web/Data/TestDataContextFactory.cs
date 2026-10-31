@@ -1,4 +1,4 @@
-﻿namespace EFCorePagingPrototype.Data;
+﻿namespace EFCorePaging.Sample.Web.Data;
 
 public interface ITestDataContextFactory : IDisposable {
     ITestDataContext CreateDbContext();

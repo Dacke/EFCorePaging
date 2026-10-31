@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace EFCorePagingPrototype.Data.Models;
+namespace EFCorePaging.Sample.Web.Data.Models;
 
 public class Person {
     [Key]
